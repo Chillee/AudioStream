@@ -19,7 +19,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="js/id3-minimized.js"></script>
 		<script src="https://apis.google.com/js/client.js?onload=load"></script>
-		<link rel="stylesheet" href="res/tnortc.css" type="text/css"/>
+		<link rel="stylesheet" href="res/tnort.css" type="text/css"/>
 		<style>
 			#holder { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;}
 			#holder.hover { border: 10px dashed #333; }
@@ -33,22 +33,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 			<article style="align: center;">
 				<h1>Stream mp3s directly from your browser</h1>
 
-				<div id="holder"></div>
+				<input id="holder" type="file"></div>
 
 				<div style="text-align: center">
 					<p><label id="meta">&nbsp;</label></p>
-					<input type="button" onclick="toggleMute();" value="Mute/Unmute" class="button"/>
 					<input type="button" onclick="togglePlay();" value="Pause/Play" class="button"/>
 					<br/>
 					<label>Volume</label>
 					<input type="range" min="0" max="100" value="100" oninput="changeVolume(this);" class="button" style="vertical-align: middle"/>
 					<h3>You have <span id="counter">0</span> listeners.</h3>
-					<h4 id="room">
-					</h4>
 				</div>
-
-				<p id="status">The required APIs are not supported by your browser. Please try again using <a href="http://www.google.com/chrome">Chrome</a>.</p>
-				<p>Drag an mp3 to the drop zone above to stream it to your friends without uploading the file to any servers.</p>
 			</article>
 		</div>
 		</div>
@@ -62,31 +56,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     	var counter = document.getElementById('counter');
     	var meta = document.getElementById('meta');
 
-		// Check for the various File API support.
-		if (window.File
-			&& window.FileReader 
-			&& window.FileList 
-			&& window.Blob
-			&& RTCPeerConnection
-			&& (window.AudioContext || window.webkitAudioContext)) {
-
-			window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
-			if (navigator.webkitGetUserMedia) {
-				state.className = 'success';
-				state.innerHTML = 'All the required APIs are available.'
-			} else {
-				state.className = 'fail';
-				state.innerHTML = 'This demo requires Chrome for playing mp3 encoded media.'
-			}
-		} else {
-			state.className = 'fail';
-		}
-
 		// handle file drops
 		holder.ondragover = function () { this.className = 'hover'; return false; };
 		holder.ondragend = function () { this.className = ''; return false; };
 		holder.ondrop = handleFileDrop;
+		holder.onchange = handleFileDrop;
 
 		// socket connection to the signalling server
 		var socket = io.connect();
@@ -218,7 +192,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 			this.className = '';
 			event.preventDefault();
 
-			var file = event.dataTransfer.files[0];
+			console.log(event);
+			// var file = event.dataTransfer.files[0];
+			if (event.dataTransfer !== undefined){
+				file = event.dataTransfer.files[0];
+			} else {
+				var file = document.getElementById('holder').files[0];
+			}
+
 			mediaDescription = {};
 
 			// load the meta-data from the mp3
@@ -340,17 +321,17 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     </script>
 
 	<script>
-		// only start analytics from the following domains
-	    if (location.host === 'webrtc.servicelab.org' || location.host === 'webrtc-mp3-stream.herokuapp.com') { 
-			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		// // only start analytics from the following domains
+	 //    if (location.host === 'webrtc.servicelab.org' || location.host === 'webrtc-mp3-stream.herokuapp.com') { 
+		// 	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		// 	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		// 	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		// 	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-			ga('create', 'UA-42632722-1', 'servicelab.org');
-			ga('send', 'pageview');
-	    } else {
-		    ga = function(param) { console.log('ga called with params ' + JSON.stringify(arguments))}
-	    }
+		// 	ga('create', 'UA-42632722-1', 'servicelab.org');
+		// 	ga('send', 'pageview');
+	 //    } else {
+		//     ga = function(param) { console.log('ga called with params ' + JSON.stringify(arguments))}
+	 //    }
 	</script>
 </html>
