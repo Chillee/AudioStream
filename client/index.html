@@ -15,12 +15,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	<head>
 	    <meta charset="utf-8">
 	    <meta name="viewport" content="width=620"/>
-	    <title>WebRTC Demo: Stream your mp3s</title>
 	    <script src="js/adapter.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="js/id3-minimized.js"></script>
 		<script src="https://apis.google.com/js/client.js?onload=load"></script>
-		<link rel="shortcut icon" type="image/x-icon" href="http://www.tno.nl/favicon_tno.ico"/>
 		<link rel="stylesheet" href="res/tnortc.css" type="text/css"/>
 		<style>
 			#holder { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;}
@@ -30,14 +28,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	</head>
 
 	<body>
-		<a href="https://github.com/eelcocramer/webrtc-mp3-stream"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
 
-		<div id="blocktop">
-			<span id="label99"/>
-		</div>
-		<div id="blockbanner-back">
-			<div id="blockbanner"></div>
-		</div>
 		<div id="blockcontent">
 			<article style="align: center;">
 				<h1>Stream mp3s directly from your browser</h1>
@@ -60,11 +51,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 				<p>Drag an mp3 to the drop zone above to stream it to your friends without uploading the file to any servers.</p>
 			</article>
 		</div>
-		<div id="blockfooter">
-			© 2013. TNO&nbsp;|&nbsp;
-			<a href="http://servicelab.org/2013/07/24/streaming-audio-between-browsers-with-webrtc-and-webaudio/">Blog</a>&nbsp;|&nbsp;
-			<a href="https://github.com/eelcocramer/webrtc-mp3-stream/blob/master/LICENSE.md">License</a>&nbsp;|&nbsp;
-			<a href="https://github.com/aadsm/JavaScript-ID3-Reader">Reading ID3 meta-data</a>
 		</div>
 	</body>
 

@@ -51,13 +51,22 @@ console.log('Listening on port: ' + port);
 // keeping track of connections
 var sockets = {};
 
+function makeid(){
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 5; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
 io.sockets.on('connection', function(socket) {
 	var id;
 
 	// determine an identifier that is unique for us.
 
 	do {
-		id = uuid.v4();
+		id = makeid();
 	} while (sockets[id]);
 
 	// we have a unique identifier that can be sent to the client
