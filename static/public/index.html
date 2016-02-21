@@ -51,7 +51,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     </div>
   </body>
 
-    <script lang="javascript">
+  <script lang="javascript">
       // references to UI elements that need to be updated
       var holder = document.getElementById('holder');
       var state = document.getElementById('status');
@@ -87,7 +87,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     socket.on('your-id', function(id) {
       myId = id;
       console.log('id = ' + id);
-
       var clientURL = window.location.protocol + '//' + window.location.host + '/listen.html?id=' + myId;
       room.innerHTML = 'Invite others to listen to your stream by sharing this link:<br/><a href="' + clientURL + '" target="_blank">' + clientURL + '</a>'; 
     });

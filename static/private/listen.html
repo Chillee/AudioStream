@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	    <title>WebRTC Streaming Media from Files</title>
    	    <script src="/js/adapter.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
+		<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 		<link rel="stylesheet" href="/res/tnort.css" type="text/css"/>
 		<style>
 			#holder { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;}
@@ -26,6 +27,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	</head>
 
 	<body>
+		<ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+
 		<div id="blockcontent">
 			<article style="align: center;">
 				<h1>Listen to the music</h1>
@@ -53,43 +59,40 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 	</body>
 
-    <script lang="javascript">
+  <script lang="javascript">
 		if (!window.chrome) {
 			alert('This page needs Google Chrome to play correctly.');
 		}
-
 		window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
 		var context = new AudioContext();
-
-		// UI elements that can be updated
 		var meta = document.getElementById('meta');
-   		var player = document.getElementById('player');
-   		var rate = document.getElementById('rate');
-
-		// check for required APIs
-		if (RTCPeerConnection) {
-		} else {
+   	var player = document.getElementById('player');
+   	var rate = document.getElementById('rate');
+		if (!RTCPeerConnection) {
 			alert('The required APIs are not fully supported in this browser.');
 		}
 
-		// configuration for peer connections
 		var pc_config = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
 
-		// connect to the server
 		var socket = io.connect();
-
-		// references to the id of this listener and the id of the host.
-		var myId;
 		var to = window.location.pathname.substr(1);
 
-		// id of the listener is received from the server
+		var myId;
 		socket.on('your-id', function(id) {
 			myId = id;
 			console.log('id = ' + id);
-			// send logon message to the host
 			socket.emit('logon', { from: myId, to: to } );
 		});
+
+		$('form').submit(function(){
+	    socket.emit('chat message', $('#m').val());
+	    $('#m').val('');
+	    return false;
+	  });
+
+	  socket.on('chat message', function(msg){
+	    $('#messages').append($('<li>').text(msg));
+	  });
 
 		socket.on('error', function(message) {
 			alert(message);
@@ -98,7 +101,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		window.onbeforeunload = function(e) {
 			player.pause();
 			socket.emit('logoff', { from: myId, to: to } );
-			for (var i=0;i<1000;i++){
+			for (var i = 0; i < 1000; i++) {
 	    		// do something unnoticable but time consuming like writing a lot to console
   				console.log('buying some time to finish sending data'); 
 			};

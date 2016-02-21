@@ -7,7 +7,7 @@ var io = require('socket.io').listen(server);
 
 app.use('/', express.static('static/public'));
 
-function makeid(){
+function makeid() {
     var possible = "abcdefghijklmnopqrstuvwxyz";
     var text = "";
     for (var i = 0; i < 5; i++) {
@@ -25,6 +25,12 @@ io.on('connection', function(socket) {
 
   sockets[id] = socket;
   socket.emit('your-id', id);
+  var to;
+
+  socket.on('chat message', function(msg){
+    console.log(msg);
+    io.sockets.in(to).emit('chat message', msg);
+  });
 
   socket.on('disconnect', function() {
     sockets[socket] = undefined;
@@ -33,6 +39,8 @@ io.on('connection', function(socket) {
 
   socket.on('message', function(message) {
     if (sockets[message.to]) {
+      to = message.to;
+      socket.join(message.to);
       sockets[message.to].emit('message', message);
     } else {
       socket.emit('disconnected', message.from);
