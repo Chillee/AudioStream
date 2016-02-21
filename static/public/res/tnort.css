@@ -13,6 +13,11 @@ img
     border                  : none;
 }
 
+a 
+{
+    color                   : white;
+}
+
 #blocktop, #blockbanner, #blockcontent, #blockfooter
 {
     width                   : 620px;
