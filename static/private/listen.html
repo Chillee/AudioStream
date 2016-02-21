@@ -1,0 +1,219 @@
+<!--
+Copyright (c) 2013, Eelco Cramer
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* Neither the name of 'The Netherlands Organisation for Applied Scientific Research TNO' nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!doctype html>
+<html>
+	<head>
+	    <meta charset="utf-8">
+	    <title>WebRTC Streaming Media from Files</title>
+   	    <script src="/js/adapter.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<link rel="stylesheet" href="/res/tnort.css" type="text/css"/>
+		<style>
+			#holder { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;}
+			#holder.hover { border: 10px dashed #333; }
+			#holder.background { background-size:100% 100%; background-repeat:no-repeat;}
+		</style>
+	</head>
+
+	<body>
+		<div id="blockcontent">
+			<article style="align: center;">
+				<h1>Listen to the music</h1>
+
+				<div style="text-align: center;">
+					<h3 id='meta'>&nbsp;</h3>
+					<h3 id='rate'>&nbsp;</h3>
+				</div>
+
+				<div style="text-align: center;">
+					<audio controls id="player" autoplay/>
+						Your browser does not support the audio element.
+					</audio>
+				</div>
+
+				<h1>Or...</h1>
+
+				<div style="text-align: center">
+					<input type="button" onclick="window.location.href='/';" value="Start your own stream!" class="button"/>
+				</div>
+
+			</article>
+
+		</div>
+
+	</body>
+
+    <script lang="javascript">
+		if (!window.chrome) {
+			alert('This page needs Google Chrome to play correctly.');
+		}
+
+		window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+		var context = new AudioContext();
+
+		// UI elements that can be updated
+		var meta = document.getElementById('meta');
+   		var player = document.getElementById('player');
+   		var rate = document.getElementById('rate');
+
+		// check for required APIs
+		if (RTCPeerConnection) {
+		} else {
+			alert('The required APIs are not fully supported in this browser.');
+		}
+
+		// configuration for peer connections
+		var pc_config = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
+
+		// connect to the server
+		var socket = io.connect();
+
+		// references to the id of this listener and the id of the host.
+		var myId;
+		var to = window.location.pathname.substr(1);
+
+		// id of the listener is received from the server
+		socket.on('your-id', function(id) {
+			myId = id;
+			console.log('id = ' + id);
+			// send logon message to the host
+			socket.emit('logon', { from: myId, to: to } );
+		});
+
+		socket.on('error', function(message) {
+			alert(message);
+		});
+
+		window.onbeforeunload = function(e) {
+			player.pause();
+			socket.emit('logoff', { from: myId, to: to } );
+			for (var i=0;i<1000;i++){
+	    		// do something unnoticable but time consuming like writing a lot to console
+  				console.log('buying some time to finish sending data'); 
+			};
+		};
+	
+		// creates a peer connection
+		var pc = new RTCPeerConnection(pc_config, { optional: [ { RtpDataChannels: true } ]});
+
+		// creates a data channel to receive meta data 
+		var dataChannel = pc.createDataChannel('mediaDescription', { reliable: false });
+		dataChannel.onmessage = function (event) {
+			try {
+				var mediaDescription = JSON.parse(event.data);
+		    	meta.innerHTML = 'Listening to ' + mediaDescription.title + ' by ' + mediaDescription.artist;
+			} catch (err) {
+				console.log(err);
+			}
+		}
+
+		function updateMediaDescription() {
+			console.log('media description received');
+		}
+
+		pc.onicecandidate = function(event) {
+			socket.emit('message', { from: myId, to: to, data: { type: 'candidate', candidate: event.candidate } });
+		}
+
+		// when a message is received add it to the peerconnection accordingly
+		socket.on('message', function(message) {
+			console.log('Received message: ' + JSON.stringify(message.data));
+			
+			if (message.data.type === 'candidate') {
+				if (message.data.candidate) {
+					console.log('adding an ice candidate');
+					pc.addIceCandidate(new RTCIceCandidate(message.data.candidate));
+				}
+			} else if (message.data.type === 'sdp') {
+				console.log('setting remote description and creating answer.')
+				pc.setRemoteDescription(new RTCSessionDescription(message.data.sdp), function() {
+					pc.createAnswer(function(desc) {
+						pc.setLocalDescription(desc);
+						socket.emit('message', { from: myId, to: message.from, data: { type: 'sdp', sdp: desc} } );
+					}, failedCreateAnswer);
+				}, failedSetRemoteDescription);
+			}
+		});
+
+	    pc.onaddstream = gotRemoteStream;
+
+	    // when a media stream is received attach it to the media element.
+    	function gotRemoteStream(event) {
+    		console.log('Got remote stream.');
+    		attachMediaStream(player, event.stream);
+    		player.play();
+    		monitorBitrate();
+    		player.onloadeddata = function (event) {
+    			console.log(event);
+    		}
+
+    		player.onprogress = function (event) {
+    			console.log(event);
+    		}
+    	}
+
+    	var timestampPrev = 0;
+    	var bytesPrev;
+    	var monitorInterval;
+
+    	function monitorBitrate() {
+    		if (monitorInterval) {
+	    		timestampPrev = 0;
+    			bytesPrev = 0;
+    			//clearInterval(monitorInterval);
+		    }
+
+    		monitorInterval = setInterval(function() {
+	    		if (pc.getRemoteStreams()[0]) {
+	    			pc.getStats(function(stats) {
+	    				var bitrateTxt = 'No bitrate stats';
+	    				var results = stats.result();
+	    				for (var i in results) {
+	    					var result = results[i];
+	    					if (!result.local || result.local === result) {
+	    						if (result.type === 'ssrc') {
+	    							var bytesNow = result.stat('bytesReceived');
+	    							if (timestampPrev > 0) {
+	    								var bitrate = Math.round((bytesNow - bytesPrev) * 8 / (result.timestamp - timestampPrev));
+
+	    								if (bitrate > 0) {
+	    									var bitrateTxt = 'Received in ' + bitrate + ' kbits/sec';
+	    								}	
+	    							}
+
+	    							timestampPrev = result.timestamp;
+	    							bytesPrev = bytesNow;
+	    						}
+	    					}
+
+							rate.innerHTML = bitrateTxt;
+	    				}
+	    			});
+	    		}
+    		}, 1000);
+    	}
+
+   	  	function failedCreateAnswer(error) {
+	    	console.log("Failure callback from createAnswer: " + JSON.stringify(error));
+  		}
+
+   	  	function failedSetRemoteDescription(error) {
+	    	console.log("Failure callback from setRemoteDescription: " + JSON.stringify(error));
+  		}
+
+    </script>
+
+	<script>
+	</script>
+</html>
