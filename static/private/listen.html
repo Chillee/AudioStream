@@ -70,20 +70,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	</body>
 
     <script lang="javascript">
-    	// getting the session id from the request URI
-		var urlParams;
-		(window.onpopstate = function () {
-		    var match,
-		        pl     = /\+/g,  // Regex for replacing addition symbol with a space
-		        search = /([^&=]+)=?([^&]*)/g,
-		        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-		        query  = window.location.search.substring(1);
-
-		    urlParams = {};
-		    while (match = search.exec(query))
-		       urlParams[decode(match[1])] = decode(match[2]);
-		})();
-
 		if (!window.chrome) {
 			alert('This page needs Google Chrome to play correctly.');
 		}
@@ -111,7 +97,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 		// references to the id of this listener and the id of the host.
 		var myId;
-		var to = urlParams.id;
+		var to = window.location.pathname.substr(1);
 
 		// id of the listener is received from the server
 		socket.on('your-id', function(id) {
