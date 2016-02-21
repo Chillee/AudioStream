@@ -87,7 +87,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     socket.on('your-id', function(id) {
       myId = id;
       console.log('id = ' + id);
-      var clientURL = window.location.protocol + '//' + window.location.host + '/listen.html?id=' + myId;
+
+      var clientURL = window.location.protocol + '//' + window.location.host + '/' + myId;
+      
       room.innerHTML = 'Invite others to listen to your stream by sharing this link:<br/><a href="' + clientURL + '" target="_blank">' + clientURL + '</a>'; 
     });
 
@@ -159,7 +161,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
       // add the stream to the peerconnection for this connection
       if (mediaSource && remoteDestination) {
         var constraints = { mandatory: {}, optional: [] };
-        // constraints.optional[0] = { 'bandwidth' : 100 }; // does not seem to influence quality
+        constraints.optional[0] = { 'bandwidth' : 100 }; // does not seem to influence quality
         peers[from].peerconnection.addStream(remoteDestination.stream, constraints);
         peers[from].stream = remoteDestination.stream;
         peers[from].peerconnection.createOffer(function(desc) {
