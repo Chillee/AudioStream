@@ -17,7 +17,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	    <title>WebRTC Streaming Media from Files</title>
    	    <script src="/js/adapter.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
-		<link rel="shortcut icon" type="image/x-icon" href="http://www.tno.nl/favicon_tno.ico"/>
 		<link rel="stylesheet" href="/res/tnort.css" type="text/css"/>
 		<style>
 			#holder { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;}
@@ -27,16 +26,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	</head>
 
 	<body>
-		<a href="https://github.com/eelcocramer/webrtc-mp3-stream"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
-
-		<div id="blocktop">
-			<span id="label99"/>
-		</div>
-
-		<div id="blockbanner-back">
-			<div id="blockbanner"></div>
-		</div>
-
 		<div id="blockcontent">
 			<article style="align: center;">
 				<h1>Listen to the music</h1>
@@ -62,11 +51,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 		</div>
 
-		<div id="blockfooter">
-			© 2013. TNO&nbsp;|&nbsp;
-			<a href="http://servicelab.org/2013/07/24/streaming-audio-between-browsers-with-webrtc-and-webaudio/">Blog</a>&nbsp;|&nbsp;
-			<a href="https://github.com/eelcocramer/webrtc-mp3-stream/blob/master/LICENSE.md">License</a>
-		</div>
 	</body>
 
     <script lang="javascript">
@@ -231,17 +215,5 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     </script>
 
 	<script>
-		// only start analytics from the following domains
-	    if (location.host === 'webrtc.servicelab.org' || location.host === 'webrtc-mp3-stream.herokuapp.com') { 
-			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-			ga('create', 'UA-42632722-1', 'servicelab.org');
-			ga('send', 'pageview');
-	    } else {
-		    ga = function(param) { console.log('ga called with params ' + JSON.stringify(arguments))}
-	    }
 	</script>
 </html>
