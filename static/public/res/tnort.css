@@ -17,6 +17,8 @@ a
 {
     color                   : white;
 }
+nav ul{height:200px; width:100%;}
+nav ul{overflow:hidden; overflow-y:scroll;}
 
 #blocktop, #blockbanner, #blockcontent, #blockfooter
 {
