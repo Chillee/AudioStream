@@ -23,15 +23,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 			#holder { border: 10px dashed #ccc; width: 300px; height: 300px; margin: 20px auto;}
 			#holder.hover { border: 10px dashed #333; }
 			#holder.background { background-size:100% 100%; background-repeat:no-repeat;}
+			form { background: #222222; padding: 3px; width: 100%; }
+      form input { border: 0; padding: 10px; width: 80%; margin-right: 2.5%; }
+      form button { width: 11.5%; background: #649EC9; color:#fff; text-transform: uppercase; border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
 		</style>
 	</head>
 
 	<body>
-		<ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
-
 		<div id="blockcontent">
 			<article style="align: center;">
 				<h1>Listen to the music</h1>
@@ -53,10 +54,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 					<input type="button" onclick="window.location.href='/';" value="Start your own stream!" class="button"/>
 				</div>
 
+				<ul id="messages"></ul>
+			  <form action="">
+			    <input id="m" autocomplete="off" /><button>Send</button>
+			  </form>
 			</article>
-
 		</div>
-
 	</body>
 
   <script lang="javascript">
