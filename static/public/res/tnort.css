@@ -5,6 +5,7 @@ body
     font-family             : Arial,Helvetica,sans-serif;
     color                   : #585858;
     font-size               : small;
+    background-color        : #222222
 }
 
 img
@@ -43,14 +44,14 @@ img
 
 #blockcontent
 {
-    min-height              : 550px;
+    min-height: 0px;
     overflow                : auto;
     padding                 : 3px 0px 0px 3px;
 }
 
 #blockcontent a
 {
-    color: #ed8000;
+    color: #FF0000;
 }
 
 #blockcontent td
@@ -63,14 +64,14 @@ img
 #blockcontent h1
 {
     padding                 : 2px 0px 2px 0px;
-    color                   : #649EC9;
+    color                   : #A0A0A0;
     text-decoration         : none;
     margin                  : 40px 0 0 4px;
     text-transform          : uppercase;
     font-weight             : strong;
     font-size               : 20px;
     overflow                : hidden;
-    padding                 : 0 0 8px;
+    padding                 : 0 0 9px;
 }
 
 #blockcontent h2
